@@ -95,8 +95,77 @@ install_dependencies() {
     echo -e "${greenColour}[✓] Dependencies installed.${endColour}"
 }
 
+bspwm_and_sxhkd() {
+    echo -e "\n${blueColour}[+] Cloning bspwm and sxhkd repositories...${endColour}"
+    cd "$USER_HOME_DIR/Downloads" || exit 1
+
+    git clone https://github.com/baskerville/bspwm.git >/dev/null 2>&1 || true
+    git clone https://github.com/baskerville/sxhkd.git >/dev/null 2>&1 || true
+
+    cd bspwm/ || exit 1
+    make >/dev/null 2>&1 || { echo -e "${redColour}[!] Error compiling bspwm${endColour}"; exit 1; }
+    make install >/dev/null 2>&1 || { echo -e "${redColour}[!] Error installing bspwm${endColour}"; exit 1; }
+
+    cd ../sxhkd/ || exit 1
+    make >/dev/null 2>&1 || { echo -e "${redColour}[!] Error compiling sxhkd${endColour}"; exit 1; }
+    make install >/dev/null 2>&1 || { echo -e "${redColour}[!] Error installing sxhkd${endColour}"; exit 1; }
+
+    # Crear configuraciones en el home del usuario
+    mkdir -p "$USER_HOME_DIR/.config/bspwm"
+    mkdir -p "$USER_HOME_DIR/.config/sxhkd"
+
+    cd ../bspwm/examples || exit 1
+    cp bspwmrc "$USER_HOME_DIR/.config/bspwm/" || { echo -e "${redColour}[!] Error copying bspwmrc${endColour}"; exit 1; }
+    chmod +x "$USER_HOME_DIR/.config/bspwm/bspwmrc"
+    cp sxhkdrc "$USER_HOME_DIR/.config/sxhkd/" || { echo -e "${redColour}[!] Error copying sxhkdrc${endColour}"; exit 1; }
+    cp "$ruta/config/sxhkdrc" "$USER_HOME_DIR/.config/sxhkd/" || { echo -e "${redColour}[!] Error copying custom sxhkdrc${endColour}"; exit 1; }
+    chmod +x "$USER_HOME_DIR/.config/sxhkd/sxhkdrc"
+
+}
+
+polybar_install(){
+    echo -e "\n${blueColour}[+] Installing Polybar...${endColour}"
+    cd "$USER_HOME_DIR/Downloads" || exit 1
+    git clone --recursive https://github.com/polybar/polybar >/dev/null 2>&1
+    cd polybar/ || exit 1
+    mkdir build && cd build || exit 1
+    cmake .. >/dev/null 2>&1
+    make -j$(nproc) >/dev/null 2>&1
+    make install >/dev/null 2>&1
+    cd "$USER_HOME_DIR/Downloads" || exit 1
+    git clone https://github.com/VaughnValle/blue-sky.git >/dev/null 2>&1
+    mkdir -p "$USER_HOME_DIR/.config/polybar"
+    cp -r blue-sky/polybar/* "$USER_HOME_DIR/.config/polybar/"
+    cd "$USER_HOME_DIR/Downloads/blue-sky/polybar/fonts" || exit 1
+    cp * /usr/share/fonts/truetype/ >/dev/null 2>&1
+    fc-cache -v >/dev/null 2>&1
+
+    echo -e "${greenColour}[✓] Polybar installed.${endColour}"
+}
+
+picom_install(){
+    echo -e "\n${blueColour}[+] Installing Picom...${endColour}"
+    cd "$USER_HOME_DIR/Downloads" || exit 1
+    git clone https://github.com/ibhagwan/picom.git >/dev/null 2>&1 || true
+    cd picom/ || exit 1
+    git submodule update --init --recursive >/dev/null 2>&1
+    meson --buildtype=release . build >/dev/null 2>&1
+    ninja -C build >/dev/null 2>&1
+    ninja -C build install >/dev/null 2>&1
+    mkdir -p "$USER_HOME_DIR/.config/picom"
+    cp "$ruta/config/picom.conf" "$USER_HOME_DIR/.config/picom/"
+    echo -e "${greenColour}[✓] Picom installed.${endColour}"
+
+}
+
+
+
 say_hello
 check_root
 install_dependencies
+bspwm_and_sxhkd
+polybar_install
+picom_install
+
 
 echo -e "\n${greenColour}[✓] All tasks completed successfully!${endColour}\n"
