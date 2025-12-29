@@ -92,6 +92,7 @@ install_dependencies() {
 
 bspwm_and_sxhkd() {
     echo -e "\n${blueColour}[+] Cloning bspwm and sxhkd repositories...${endColour}"
+    mkdir -p "$USER_HOME_DIR/Downloads"
     cd "$USER_HOME_DIR/Downloads" || exit 1
 
     git clone https://github.com/baskerville/bspwm.git >/dev/null 2>&1 || true
