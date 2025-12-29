@@ -20,11 +20,9 @@ tput civis
 trap 'tput cnorm' EXIT
 trap 'tput cnorm; exit 1' INT TERM
 
-if [[ -n "$SUDO_USER" ]]; then
-    USER_HOME_DIR=$(getent passwd "$SUDO_USER" | cut -d: -f6)
-else
-    USER_HOME_DIR="$HOME"
-fi
+
+REAL_USER="${SUDO_USER:-$USER}"
+USER_HOME_DIR=$(getent passwd "$REAL_USER" | cut -d: -f6)
 
 say_hello(){
     clear
