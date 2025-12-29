@@ -1,7 +1,5 @@
 #!/bin/bash
 
-#!/bin/bash
-
 # Colours
 greenColour="\e[1;32m"
 endColour="\e[0m"
@@ -22,12 +20,8 @@ tput civis
 trap 'tput cnorm' EXIT
 trap 'tput cnorm; exit 1' INT TERM
 
-# Obtener home del usuario real
-if [[ -n "$SUDO_USER" ]]; then
-    USER_HOME_DIR=$(eval echo "~$SUDO_USER")
-else
-    USER_HOME_DIR="$HOME"
-fi
+USER_HOME_DIR="$HOME"
+
 
 say_hello(){
     clear
