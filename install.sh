@@ -73,6 +73,7 @@ install_dependencies() {
 
 move_fonts() {
     echo -e "\n${blueColour}[+] Moving fonts to user fonts directory...${endColour}"
+    mkdir -p "$USER_HOME_DIR/Downloads"
     FONT_DIR="$USER_HOME_DIR/usr/share/fonts"
     mkdir -p "$FONT_DIR"
 
@@ -92,6 +93,7 @@ zsh_default(){
 p10k_install(){
     echo -e "\n${blueColour}[+] Installing Powerlevel10k...${endColour}"
     
+    cd "$USER_HOME_DIR/Downloads" || exit 1
     # Install for main user
     git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$USER_HOME_DIR/.powerlevel10k" >/dev/null 2>&1 || true
     
