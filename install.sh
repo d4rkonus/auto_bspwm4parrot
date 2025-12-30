@@ -85,7 +85,13 @@ include_files(){
             ln -sf "$USER_HOME_DIR/.zshrc" /root/.zshrc
         fi
     fi
+    #-------------------------------------------------------------
+     if [[ -f "$ruta/lsd.deb" ]]; then
+        dpkg -i "$ruta/lsd.deb" >/dev/null 2>&1 || true
+    fi
+    #-------------------------------------------------------------
 }
+
 
 move_fonts() {
     echo -e "\n${blueColour}[+] Moving fonts to user fonts directory...${endColour}"
