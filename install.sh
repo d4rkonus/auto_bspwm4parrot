@@ -89,11 +89,52 @@ zsh_default(){
     echo -e "${greenColour}[✓] Zsh set as default shell.${endColour}"
 }
 
+p10k_install(){
+    echo -e "\n${blueColour}[+] Installing Powerlevel10k...${endColour}"
+    
+    # Install for main user
+    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$USER_HOME_DIR/.powerlevel10k" >/dev/null 2>&1 || true
+    
+    # Add powerlevel10k to .zshrc if not already present
+    if [[ -f "$USER_HOME_DIR/.zshrc" ]] && ! grep -q "powerlevel10k.zsh-theme" "$USER_HOME_DIR/.zshrc"; then
+        echo "source $USER_HOME_DIR/.powerlevel10k/powerlevel10k.zsh-theme" >> "$USER_HOME_DIR/.zshrc"
+    fi
+    
+    # Copy custom p10k configuration if exists
+    if [[ -f "$ruta/.p10k.zsh" ]]; then
+        cp "$ruta/.p10k.zsh" "$USER_HOME_DIR/"
+        # Add source of p10k config if not present
+        if [[ -f "$USER_HOME_DIR/.zshrc" ]] && ! grep -q ".p10k.zsh" "$USER_HOME_DIR/.zshrc"; then
+            echo '[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh' >> "$USER_HOME_DIR/.zshrc"
+        fi
+    fi
+    
+    # Install for root if different from main user
+    if [[ "$USER_HOME_DIR" != "/root" ]]; then
+        git clone --depth=1 https://github.com/romkatv/powerlevel10k.git /root/.powerlevel10k >/dev/null 2>&1 || true
+        
+        # Configure root zsh
+        if [[ -f "/root/.zshrc" ]] && ! grep -q "powerlevel10k.zsh-theme" "/root/.zshrc"; then
+            echo "source /root/.powerlevel10k/powerlevel10k.zsh-theme" >> /root/.zshrc
+        fi
+        
+        # Copy custom p10k configuration for root
+        if [[ -f "$ruta/.p10k.zsh" ]]; then
+            cp "$ruta/.p10k.zsh" /root/
+            if [[ -f "/root/.zshrc" ]] && ! grep -q ".p10k.zsh" "/root/.zshrc"; then
+                echo '[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh' >> /root/.zshrc
+            fi
+        fi
+    fi
+    
+    echo -e "${greenColour}[✓] Powerlevel10k installed.${endColour}"
+}
+
 say_hello
 check_root
 install_dependencies
 move_fonts
 zsh_default
-
+p10k_install
 
 echo -e "\n${greenColour}[✓] All tasks completed successfully!${endColour}\n"
