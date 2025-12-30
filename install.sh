@@ -202,9 +202,6 @@ p10k_install(){
 say_hello
 check_root
 install_dependencies
-bspwm_and_sxhkd
-polybar_install
-picom_install
 move_fonts
 zsh_default
 p10k_install
