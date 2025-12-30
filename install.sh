@@ -11,7 +11,7 @@ turquoiseColour="\e[1;36m"
 grayColour="\e[1;37m"
 
 # Ruta real del script (FIX CRÍTICO)
-ruta="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ruta="$(pwd)"
 
 # Ocultar cursor
 tput civis 2>/dev/null
@@ -68,149 +68,25 @@ install_dependencies() {
         >/dev/null 2>&1
 
     echo -e "${greenColour}[✓] Dependencies installed.${endColour}"
+
 }
 
-bspwm_and_sxhkd() {
-    echo -e "\n${blueColour}[+] Installing bspwm and sxhkd...${endColour}"
-    mkdir -p "$USER_HOME_DIR/Downloads"
-    cd "$USER_HOME_DIR/Downloads" || exit 1
+move_fonts() {
+    echo -e "\n${blueColour}[+] Moving fonts to user fonts directory...${endColour}"
+    FONT_DIR="$USER_HOME_DIR/usr/share/fonts"
+    mkdir -p "$FONT_DIR"
 
-    [[ -d bspwm ]] || git clone https://github.com/baskerville/bspwm.git >/dev/null 2>&1
-    [[ -d sxhkd ]] || git clone https://github.com/baskerville/sxhkd.git >/dev/null 2>&1
+    cp -r "$ruta/fonts/"* "$FONT_DIR/"
 
-    cd bspwm || exit 1
-    make >/dev/null 2>&1 || exit 1
-    make install >/dev/null 2>&1 || exit 1
-
-    cd ../sxhkd || exit 1
-    make >/dev/null 2>&1 || exit 1
-    make install >/dev/null 2>&1 || exit 1
-
-    mkdir -p "$USER_HOME_DIR/.config/bspwm" "$USER_HOME_DIR/.config/sxhkd"
-
-    cd ../bspwm/examples || exit 1
-    cp bspwmrc "$USER_HOME_DIR/.config/bspwm/"
-    chmod +x "$USER_HOME_DIR/.config/bspwm/bspwmrc"
-
-    cp sxhkdrc "$USER_HOME_DIR/.config/sxhkd/"
-    cp "$ruta/config/sxhkdrc" "$USER_HOME_DIR/.config/sxhkd/"
-    chmod +x "$USER_HOME_DIR/.config/sxhkd/sxhkdrc"
-}
-
-polybar_install(){
-    echo -e "\n${blueColour}[+] Installing Polybar...${endColour}"
-    cd "$USER_HOME_DIR/Downloads" || exit 1
-
-    [[ -d polybar ]] || git clone --recursive https://github.com/polybar/polybar >/dev/null 2>&1
-    cd polybar || exit 1
-    mkdir -p build && cd build || exit 1
-
-    cmake .. >/dev/null 2>&1 || exit 1
-    make -j"$(nproc)" >/dev/null 2>&1 || exit 1
-    make install >/dev/null 2>&1 || exit 1
-
-    cd "$USER_HOME_DIR/Downloads" || exit 1
-    [[ -d blue-sky ]] || git clone https://github.com/VaughnValle/blue-sky.git >/dev/null 2>&1
-
-    mkdir -p "$USER_HOME_DIR/.config/polybar"
-    cp -r blue-sky/polybar/* "$USER_HOME_DIR/.config/polybar/"
-
-    cp "$USER_HOME_DIR/Downloads/blue-sky/polybar/fonts/"*.ttf /usr/share/fonts/truetype/ 2>/dev/null
-    fc-cache -v >/dev/null 2>&1
-
-    echo -e "${greenColour}[✓] Polybar installed.${endColour}"
-}
-
-picom_install(){
-    echo -e "\n${blueColour}[+] Installing Picom...${endColour}"
-    cd "$USER_HOME_DIR/Downloads" || exit 1
-
-    [[ -d picom ]] || git clone https://github.com/ibhagwan/picom.git >/dev/null 2>&1
-    cd picom || exit 1
-
-    git submodule update --init --recursive >/dev/null 2>&1
-    meson --buildtype=release . build >/dev/null 2>&1
-    ninja -C build >/dev/null 2>&1
-    ninja -C build install >/dev/null 2>&1
-
-    mkdir -p "$USER_HOME_DIR/.config/picom"
-    cp "$ruta/config/picom.conf" "$USER_HOME_DIR/.config/picom/"
-}
-
-move_fonts(){
-    echo -e "\n${blueColour}[+] Moving fonts...${endColour}"
-    if [[ -d "$ruta/fonts" ]]; then
-        cp "$ruta/fonts/"*.ttf /usr/local/share/fonts/ 2>/dev/null
-        fc-cache -fv >/dev/null 2>&1
-        echo -e "${greenColour}[✓] Fonts moved.${endColour}"
-    else
-        echo -e "${yellowColour}[!] Fonts directory not found.${endColour}"
-    fi
+    echo -e "${greenColour}[✓] Fonts moved successfully.${endColour}"
 }
 
 zsh_default(){
-    echo -e "\n${blueColour}[+] Configuring Zsh as default shell...${endColour}"
-
-    local ZSH_PATH
-    ZSH_PATH="$(command -v zsh)"
-
-    if [[ -z "$ZSH_PATH" ]]; then
-        echo -e "${redColour}[!] Zsh not found, skipping shell change.${endColour}"
-        return
-    fi
-
-    # Usuario real
-    if [[ "$(getent passwd "$REAL_USER" | cut -d: -f7)" != "$ZSH_PATH" ]]; then
-        usermod --shell "$ZSH_PATH" "$REAL_USER"
-        echo -e "${greenColour}[✓] Zsh set for user ${REAL_USER}.${endColour}"
-    else
-        echo -e "${yellowColour}[!] User ${REAL_USER} already uses Zsh.${endColour}"
-    fi
-
-    # Root
-    if [[ "$(getent passwd root | cut -d: -f7)" != "$ZSH_PATH" ]]; then
-        usermod --shell "$ZSH_PATH" root
-        echo -e "${greenColour}[✓] Zsh set for root.${endColour}"
-    else
-        echo -e "${yellowColour}[!] Root already uses Zsh.${endColour}"
-    fi
-}
-
-fix_permissions(){
-    echo -e "\n${blueColour}[+] Fixing file permissions...${endColour}"
-    chown -R "$REAL_USER:$REAL_USER" "$USER_HOME_DIR" 2>/dev/null
-    echo -e "${greenColour}[✓] Permissions fixed.${endColour}"
-}
-
-p10k_install(){
-    echo -e "\n${blueColour}[+] Installing Powerlevel10k...${endColour}"
-
-    local ZSHRC="$USER_HOME_DIR/.zshrc"
-
-    # Clonar Powerlevel10k
-    if [[ ! -d "$USER_HOME_DIR/.powerlevel10k" ]]; then
-        git clone --depth=1 https://github.com/romkatv/powerlevel10k.git \
-            "$USER_HOME_DIR/.powerlevel10k" >/dev/null 2>&1
-    fi
-
-    # Crear .zshrc si no existe
-    [[ -f "$ZSHRC" ]] || touch "$ZSHRC"
-
-    # Cargar Powerlevel10k al inicio del .zshrc
-    if ! grep -q "powerlevel10k.zsh-theme" "$ZSHRC"; then
-        sed -i '1i source ~/.powerlevel10k/powerlevel10k.zsh-theme' "$ZSHRC"
-    fi
-
-    # Copiar configuración p10k
-    if [[ -f "$ruta/.p10k.zsh" ]]; then
-        cp "$ruta/.p10k.zsh" "$USER_HOME_DIR/"
-
-        if ! grep -q ".p10k.zsh" "$ZSHRC"; then
-            echo '[[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh' >> "$ZSHRC"
-        fi
-    fi
-
-    echo -e "${greenColour}[✓] Powerlevel10k installed.${endColour}"
+    echo -e "\n${blueColour}[+] Setting Zsh as default shell for user...${endColour}"
+    chsh -s /bin/zsh "$REAL_USER"
+    echo -e "\n${blueColour}[+] Setting Zsh as default shell for root...${endColour}"
+    chsh -s /bin/zsh root
+    echo -e "${greenColour}[✓] Zsh set as default shell.${endColour}"
 }
 
 say_hello
@@ -218,6 +94,6 @@ check_root
 install_dependencies
 move_fonts
 zsh_default
-p10k_install
+
 
 echo -e "\n${greenColour}[✓] All tasks completed successfully!${endColour}\n"
