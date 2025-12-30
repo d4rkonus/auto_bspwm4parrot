@@ -49,7 +49,7 @@ install_dependencies() {
     apt-get update -y >/dev/null 2>&1
 
     apt-get install -y \
-        zsh build-essential kitty git vim meson ninja-build micro \
+        zsh zsh-syntax-highlighting build-essential kitty git vim meson ninja-build micro \
         libxcb-util0-dev libxcb-ewmh-dev libxcb-randr0-dev \
         libxcb-icccm4-dev libxcb-keysyms1-dev libxcb-xinerama0-dev \
         libasound2-dev libxcb-xtest0-dev libxcb-shape0-dev \
