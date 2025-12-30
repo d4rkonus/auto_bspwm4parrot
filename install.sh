@@ -74,6 +74,7 @@ install_dependencies() {
 
 bspwm_and_sxhkd() {
     echo -e "\n${blueColour}[+] Cloning bspwm and sxhkd repositories...${endColour}"
+    mkdir -p "$USER_HOME_DIR/Downloads"
     cd "$USER_HOME_DIR/Downloads" || exit 1
 
     git clone https://github.com/baskerville/bspwm.git >/dev/null 2>&1 || true
@@ -164,7 +165,6 @@ include_files(){
 
 move_fonts() {
     echo -e "\n${blueColour}[+] Moving fonts to user fonts directory...${endColour}"
-    mkdir -p "$USER_HOME_DIR/Downloads"
     FONT_DIR="$USER_HOME_DIR/usr/share/fonts"
     mkdir -p "$FONT_DIR"
 
