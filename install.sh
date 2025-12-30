@@ -151,6 +151,14 @@ include_files(){
     cp "$ruta/config/workspace.ini" "$USER_HOME_DIR/.config/polybar/"
     cp "$ruta/config/current.ini" "$USER_HOME_DIR/.config/polybar/"
     #-------------------------------------------------------------
+    mkdir -p "$USER_HOME_DIR/.config/bin"
+    cp "$ruta/bin/parrot_ip.sh" "$USER_HOME_DIR/.config/bin/"
+    cp "$ruta/bin/vpn_ip.sh" "$USER_HOME_DIR/.config/bin/"
+    cp "$ruta/bin/value_crypto.sh" "$USER_HOME_DIR/.config/bin/"
+    chmod +x "$USER_HOME_DIR/.config/bin/value_crypto.sh"
+    chmod +x "$USER_HOME_DIR/.config/bin/parrot_ip.sh"
+    chmod +x "$USER_HOME_DIR/.config/bin/vpn_ip.sh"
+    #-------------------------------------------------------------
     if [[ -f "$ruta/.zshrc" ]]; then
         cp "$ruta/.zshrc" "$USER_HOME_DIR/"
         # Crear enlace simbólico en /root si es diferente al usuario
