@@ -90,10 +90,21 @@ zsh_default(){
     echo -e "${greenColour}[✓] Zsh set as default shell.${endColour}"
 }
 
+fix_permissions(){
+    echo -e "\n${blueColour}[+] Fixing file permissions...${endColour}"
+    if [[ -n "$SUDO_USER" ]]; then
+        chown -R "$SUDO_USER:$SUDO_USER" "$USER_HOME_DIR/.config" 2>/dev/null || true
+        chown "$SUDO_USER:$SUDO_USER" "$USER_HOME_DIR/.zshrc" 2>/dev/null || true
+        chown "$SUDO_USER:$SUDO_USER" "$USER_HOME_DIR/.p10k.zsh" 2>/dev/null || true
+        chown -R "$SUDO_USER:$SUDO_USER" "$USER_HOME_DIR/.powerlevel10k" 2>/dev/null || true
+    fi
+    echo -e "${greenColour}[✓] Permissions fixed.${endColour}"
+}
+
+
 p10k_install(){
     echo -e "\n${blueColour}[+] Installing Powerlevel10k...${endColour}"
     
-    cd "$USER_HOME_DIR/Downloads" || exit 1
     # Install for main user
     git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$USER_HOME_DIR/.powerlevel10k" >/dev/null 2>&1 || true
     
@@ -138,5 +149,6 @@ install_dependencies
 move_fonts
 zsh_default
 p10k_install
+fix_permissions
 
 echo -e "\n${greenColour}[✓] All tasks completed successfully!${endColour}\n"
