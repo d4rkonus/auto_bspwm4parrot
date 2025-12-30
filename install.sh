@@ -185,7 +185,5 @@ polybar_install
 picom_install
 move_fonts
 zsh_default
-p10k_install
-fix_permissions
 
 echo -e "\n${greenColour}[✓] All tasks completed successfully!${endColour}\n"
