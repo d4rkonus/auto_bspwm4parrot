@@ -68,7 +68,7 @@ alias cat='/bin/batcat --paging=never'
 # Plugins
 source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 #source /usr/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh
-source /usr/share/zsh-sudo/sudo.plugin.zsh
+#source /usr/share/zsh-sudo/sudo.plugin.zsh
 
 
 # Finalize Powerlevel10k instant prompt. Should stay at the bottom of ~/.zshrc.
