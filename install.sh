@@ -71,6 +71,22 @@ install_dependencies() {
 
 }
 
+include_files(){
+     echo -e "\n${blueColour}[+] Including additional configuration files...${endColour}"
+    #-------------------------------------------------------------
+    mkdir -p "$USER_HOME_DIR/.config/kitty"
+    cp "$ruta/kitty/kitty.conf" "$USER_HOME_DIR/.config/kitty/"
+    cp "$ruta/kitty/color.ini" "$USER_HOME_DIR/.config/kitty/"
+    #-------------------------------------------------------------
+    if [[ -f "$ruta/.zshrc" ]]; then
+        cp "$ruta/.zshrc" "$USER_HOME_DIR/"
+        # Crear enlace simbólico en /root si es diferente al usuario
+        if [[ "$USER_HOME_DIR" != "/root" ]]; then
+            ln -sf "$USER_HOME_DIR/.zshrc" /root/.zshrc
+        fi
+    fi
+}
+
 move_fonts() {
     echo -e "\n${blueColour}[+] Moving fonts to user fonts directory...${endColour}"
     mkdir -p "$USER_HOME_DIR/Downloads"
@@ -147,6 +163,7 @@ say_hello
 check_root
 install_dependencies
 move_fonts
+include_files
 zsh_default
 p10k_install
 fix_permissions
