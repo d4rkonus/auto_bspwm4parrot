@@ -149,9 +149,31 @@ move_fonts(){
 }
 
 zsh_default(){
-    command -v zsh >/dev/null 2>&1 || return
-    usermod --shell /usr/bin/zsh "$REAL_USER"
-    usermod --shell /usr/bin/zsh root
+    echo -e "\n${blueColour}[+] Configuring Zsh as default shell...${endColour}"
+
+    local ZSH_PATH
+    ZSH_PATH="$(command -v zsh)"
+
+    if [[ -z "$ZSH_PATH" ]]; then
+        echo -e "${redColour}[!] Zsh not found, skipping shell change.${endColour}"
+        return
+    fi
+
+    # Usuario real
+    if [[ "$(getent passwd "$REAL_USER" | cut -d: -f7)" != "$ZSH_PATH" ]]; then
+        usermod --shell "$ZSH_PATH" "$REAL_USER"
+        echo -e "${greenColour}[✓] Zsh set for user ${REAL_USER}.${endColour}"
+    else
+        echo -e "${yellowColour}[!] User ${REAL_USER} already uses Zsh.${endColour}"
+    fi
+
+    # Root
+    if [[ "$(getent passwd root | cut -d: -f7)" != "$ZSH_PATH" ]]; then
+        usermod --shell "$ZSH_PATH" root
+        echo -e "${greenColour}[✓] Zsh set for root.${endColour}"
+    else
+        echo -e "${yellowColour}[!] Root already uses Zsh.${endColour}"
+    fi
 }
 
 fix_permissions(){
