@@ -174,6 +174,18 @@ include_files(){
     echo -e "${greenColour}[✓] Configuration files included.${endColour}"
 }
 
+move_wallpaper(){
+    echo -e "\n${blueColour}[+] Moving wallpaper...${endColour}"
+    if [[ -f "$ruta/wallpaper.jpg" ]]; then
+        mkdir -p "$USER_HOME_DIR/Pictures"
+        cp "$ruta/wallpaper.jpg" "$USER_HOME_DIR/Pictures/wallpaper.jpg"
+        echo "feh --bg-fill $USER_HOME_DIR/Pictures/wallpaper.jpg &" >> "$USER_HOME_DIR/.config/bspwm/bspwmrc"
+        echo -e "${greenColour}[✓] Wallpaper moved.${endColour}"
+    else
+        echo -e "${yellowColour}[!] Wallpaper not found.${endColour}"
+    fi
+}
+
 
 move_fonts() {
     echo -e "\n${blueColour}[+] Moving fonts to user fonts directory...${endColour}"
@@ -257,6 +269,7 @@ polybar_install
 picom_install
 move_fonts
 include_files
+move_wallpaper
 zsh_default
 p10k_install
 fix_permissions
