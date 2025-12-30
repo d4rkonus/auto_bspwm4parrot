@@ -148,6 +148,9 @@ include_files(){
     cp "$ruta/kitty/kitty.conf" "$USER_HOME_DIR/.config/kitty/"
     cp "$ruta/kitty/color.ini" "$USER_HOME_DIR/.config/kitty/"
     #-------------------------------------------------------------
+    cp "$ruta/config/workspace.ini" "$USER_HOME_DIR/.config/polybar/"
+    cp "$ruta/config/current.ini" "$USER_HOME_DIR/.config/polybar/"
+    #-------------------------------------------------------------
     if [[ -f "$ruta/.zshrc" ]]; then
         cp "$ruta/.zshrc" "$USER_HOME_DIR/"
         # Crear enlace simbólico en /root si es diferente al usuario
@@ -160,6 +163,7 @@ include_files(){
         dpkg -i "$ruta/lsd.deb" >/dev/null 2>&1 || true
     fi
     #-------------------------------------------------------------
+    echo -e "${greenColour}[✓] Configuration files included.${endColour}"
 }
 
 
