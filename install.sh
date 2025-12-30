@@ -185,18 +185,32 @@ fix_permissions(){
 p10k_install(){
     echo -e "\n${blueColour}[+] Installing Powerlevel10k...${endColour}"
 
-    [[ -d "$USER_HOME_DIR/.powerlevel10k" ]] || \
-        git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$USER_HOME_DIR/.powerlevel10k" >/dev/null 2>&1
+    local ZSHRC="$USER_HOME_DIR/.zshrc"
 
-    if [[ -f "$USER_HOME_DIR/.zshrc" ]] && ! grep -q powerlevel10k "$USER_HOME_DIR/.zshrc"; then
-        echo "source ~/.powerlevel10k/powerlevel10k.zsh-theme" >> "$USER_HOME_DIR/.zshrc"
+    # Clonar Powerlevel10k
+    if [[ ! -d "$USER_HOME_DIR/.powerlevel10k" ]]; then
+        git clone --depth=1 https://github.com/romkatv/powerlevel10k.git \
+            "$USER_HOME_DIR/.powerlevel10k" >/dev/null 2>&1
     fi
 
+    # Crear .zshrc si no existe
+    [[ -f "$ZSHRC" ]] || touch "$ZSHRC"
+
+    # Cargar Powerlevel10k al inicio del .zshrc
+    if ! grep -q "powerlevel10k.zsh-theme" "$ZSHRC"; then
+        sed -i '1i source ~/.powerlevel10k/powerlevel10k.zsh-theme' "$ZSHRC"
+    fi
+
+    # Copiar configuración p10k
     if [[ -f "$ruta/.p10k.zsh" ]]; then
         cp "$ruta/.p10k.zsh" "$USER_HOME_DIR/"
-        grep -q ".p10k.zsh" "$USER_HOME_DIR/.zshrc" || \
-            echo '[[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh' >> "$USER_HOME_DIR/.zshrc"
+
+        if ! grep -q ".p10k.zsh" "$ZSHRC"; then
+            echo '[[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh' >> "$ZSHRC"
+        fi
     fi
+
+    echo -e "${greenColour}[✓] Powerlevel10k installed.${endColour}"
 }
 
 say_hello
