@@ -46,7 +46,7 @@ install_dependencies() {
 
     # Dependencias comunes
     apt-get install -y \
-        build-essential kitty git vim meson ninja-build \
+        zsh build-essential kitty git vim meson ninja-build \
         libxcb-util0-dev micro libxcb-ewmh-dev libxcb-randr0-dev \
         libxcb-icccm4-dev libxcb-keysyms1-dev libxcb-xinerama0-dev \
         libasound2-dev libxcb-xtest0-dev libxcb-shape0-dev \
@@ -154,7 +154,21 @@ picom_install(){
 
 }
 
+move_fonts(){
+    echo -e "\n${blueColour}[+] Moving fonts...${endColour}"
+    if [[ -d "$ruta/fonts" ]]; then
+        cp -r "$ruta/fonts/"* "/usr/local/share/fonts/"
+        fc-cache -fv >/dev/null 2>&1
+        echo -e "${greenColour}[✓] Fonts moved.${endColour}"
+    else
+        echo -e "${yellowColour}[!] Fonts directory not found.${endColour}"
+    fi
+}
 
+zsh_default(){
+    usermod --shell /usr/bin/zsh "$REAL_USER"
+    usermod --shell /usr/bin/zsh root
+}
 
 say_hello
 check_root
@@ -162,6 +176,8 @@ install_dependencies
 bspwm_and_sxhkd
 polybar_install
 picom_install
+move_fonts
+zsh_default
 
 
 echo -e "\n${greenColour}[✓] All tasks completed successfully!${endColour}\n"
